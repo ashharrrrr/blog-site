@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+
 export function authenticateToken(req: Request, res: Response, next: NextFunction){
   const authHeader = req.headers.authorization;
 
@@ -11,9 +12,9 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
   }
 
   try{
-    const payload = jwt.verify(token, process.env.JWT_SECRET!);
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
 
-    (req as any).user = payload;
+    req.user = payload;
 
     next();
   } catch(err){

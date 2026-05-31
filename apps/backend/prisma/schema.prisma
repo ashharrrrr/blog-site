@@ -24,13 +24,13 @@ model User {
   role         Role      @default(READER)
   displayName  String?
   bio          String?
-  blogs        Blog[]
+  posts        Post[]
   comments     Comment[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
 
-model Blog {
+model Post {
   id          String    @id @default(cuid())
   title       String
   slug        String    @unique
@@ -53,12 +53,12 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  blogId    String
-  blog      Blog     @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([blogId])
+  @@index([postId])
   @@index([userId])
 }
