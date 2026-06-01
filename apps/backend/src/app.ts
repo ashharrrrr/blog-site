@@ -3,10 +3,17 @@ import authRouter from "./routes/auth.routes.js";
 import postRouter from "./routes/post.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import userRouter from "./routes/user.routes.js";
+import cors from "cors";
 
 const app = express();
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
