@@ -1,0 +1,38 @@
+const API_URL = "http://localhost:3000";
+import type { Post, CreatePostInput } from "@/types/post";
+
+export async function getMyPosts(): Promise<Post[]>{
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+        `${API_URL}/posts/mine`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    if (!response.ok) {
+        throw new Error("Failed to fetch posts");
+    }
+
+    return response.json();
+};
+
+export async function createPost(input: CreatePostInput){
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/posts`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization:`Bearer ${token}`
+        },
+        body: JSON.stringify(input)
+    });
+
+    if(!response.ok){
+        throw new Error("Failed to create post")
+    }
+    return response.json();
+}

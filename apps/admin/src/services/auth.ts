@@ -1,9 +1,6 @@
 const API_URL = "http://localhost:3000";
 
-  export async function login(
-    username: string,
-    password: string
-){
+export async function login(username: string, password: string) {
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: {
@@ -15,8 +12,27 @@ const API_URL = "http://localhost:3000";
     }),
   });
 
-  if(!response.ok){
+  if (!response.ok) {
     throw new Error("Login failed");
+  }
+
+  return response.json();
+}
+
+export async function getCurrentUser() {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(
+    `${API_URL}/auth/me`,
+    {
+      headers:{
+        Authorization: `Bearer ${token}`
+      }
+    }
+  );
+
+  if(!response.ok) {
+    throw new Error("Unauthorized");
   }
 
   return response.json();

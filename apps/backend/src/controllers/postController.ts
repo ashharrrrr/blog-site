@@ -9,7 +9,7 @@ export async function createPost(req: Request, res: Response) {
         message: "Unauthorized"
       })
     }
-    const { title, content } = req.body;
+    const { title, excerpt, content } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({
@@ -22,6 +22,7 @@ export async function createPost(req: Request, res: Response) {
         authorId: req.user.userId,
         title,
         content,
+        excerpt,
         slug: slugify(title)
       }
     });
@@ -239,7 +240,7 @@ export async function getAllAuthorPosts(req: Request, res: Response){
       })
     }
 
-    const posts = prisma.post.findMany({
+    const posts = await prisma.post.findMany({
       where: {
         authorId: req.user.userId
       },
@@ -252,9 +253,7 @@ export async function getAllAuthorPosts(req: Request, res: Response){
       },
     });
 
-    return res.status(200).json({
-      posts
-    });
+    return res.status(200).json(posts);
   } catch(err) {
     console.error(err);
     return res.status(500).json({
@@ -266,7 +265,6 @@ export async function getAllAuthorPosts(req: Request, res: Response){
 type PostIdParams = {
   id: string;
 };
-
 
 export async function getAuthorPost(req: Request<PostIdParams>, res: Response){
   try{
@@ -300,7 +298,6 @@ export async function getAuthorPost(req: Request<PostIdParams>, res: Response){
     })
   }
 }
-
 
 // helper (yo this is not a fucking ai comment)
 async function getOwnedPost(
