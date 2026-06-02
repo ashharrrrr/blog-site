@@ -198,9 +198,9 @@ export async function updatePost(req: Request<PostParams>, res: Response) {
   }
 }
 
-export async function deletePost(req: Request<PostParams>, res: Response){
-  try{
-    if(!req.user){
+export async function deletePost(req: Request<PostParams>, res: Response) {
+  try {
+    if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized"
       })
@@ -208,7 +208,7 @@ export async function deletePost(req: Request<PostParams>, res: Response){
 
     const post = await getOwnedPost(req.params.id, req.user.userId);
 
-    if(!post){
+    if (!post) {
       return res.status(403).json({
         message: "Forbidden"
       })
@@ -224,7 +224,7 @@ export async function deletePost(req: Request<PostParams>, res: Response){
       messsage: "Post deleted"
     })
 
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
       message: "Internal server error"
@@ -232,8 +232,8 @@ export async function deletePost(req: Request<PostParams>, res: Response){
   }
 }
 
-export async function getAllAuthorPosts(req: Request, res: Response){
-  try{
+export async function getAllAuthorPosts(req: Request, res: Response) {
+  try {
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized"
@@ -251,13 +251,16 @@ export async function getAllAuthorPosts(req: Request, res: Response){
           },
         },
       },
+      orderBy: {
+        updatedAt: "desc"
+      }
     });
 
     return res.status(200).json(posts);
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message:"Internal server error"
+      message: "Internal server error"
     })
   }
 }
@@ -266,15 +269,15 @@ type PostIdParams = {
   id: string;
 };
 
-export async function getAuthorPost(req: Request<PostIdParams>, res: Response){
-  try{
+export async function getAuthorPost(req: Request<PostIdParams>, res: Response) {
+  try {
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized"
       })
     }
 
-    const posts = prisma.post.findFirst({
+    const posts = await prisma.post.findFirst({
       where: {
         authorId: req.user.userId,
         id: req.params.id
@@ -288,13 +291,13 @@ export async function getAuthorPost(req: Request<PostIdParams>, res: Response){
       },
     });
 
-    return res.status(200).json({
-      posts
-    });
-  } catch(err) {
+    console.log("Post", posts);
+
+    return res.status(200).json(posts);
+  } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message:"Internal server error"
+      message: "Internal server error"
     })
   }
 }
