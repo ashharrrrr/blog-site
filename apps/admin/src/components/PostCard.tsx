@@ -20,7 +20,7 @@ type PostCardProps = {
 export default function PostCard({ post, onPublish, onDelete }: PostCardProps) {
   const navigate = useNavigate();
   return (
-    <li key={post.id} className="space-y-2">
+    <li key={post.id} className="list-none space-y-2">
       <Card onClick={() => navigate(`/posts/${post.id}`)} className="hover:cursor-pointer w-full max-w-5xl mx-auto space-y-2">
         <CardHeader className="flex justify-between items-start">
           <div>

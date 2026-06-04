@@ -4,16 +4,19 @@ import DashboardPage from "./pages/DashboardPage.tsx";
 import CreatePostPage from "./pages/CreatePostPage.tsx"
 import PostPreviewPage from "./pages/PostPreviewPage.tsx"
 import EditPostPage from "./pages/EditPostPage.tsx"
+import DashboardLayout from "./layouts/DashboardLayout.tsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<DashboardPage />} /> 
-        <Route path="/posts/new" element={<CreatePostPage />} />
-        <Route path="/posts/:id" element={<PostPreviewPage />} />
-        <Route path="/posts/:id/update" element={<EditPostPage />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/posts/new" element={<CreatePostPage />} />
+          <Route path="/posts/:id" element={<PostPreviewPage />} />
+          <Route path="/posts/:id/update" element={<EditPostPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

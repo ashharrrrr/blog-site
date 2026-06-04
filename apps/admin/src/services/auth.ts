@@ -34,6 +34,5 @@ export async function getCurrentUser() {
   if(!response.ok) {
     throw new Error("Unauthorized");
   }
-
   return response.json();
 }
