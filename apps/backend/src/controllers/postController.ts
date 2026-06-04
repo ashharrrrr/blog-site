@@ -173,6 +173,8 @@ export async function updatePost(req: Request<PostParams>, res: Response) {
       });
     }
 
+    console.log("BEFORE UPDATE", post)
+
     const updated = await prisma.post.update({
       where: {
         id: req.params.id,
@@ -183,6 +185,7 @@ export async function updatePost(req: Request<PostParams>, res: Response) {
         slug: slugify(req.body.title),
       }
     });
+    console.log("After Update", updated)
 
     return res.status(201).json({
       message: "Post updated",

@@ -23,8 +23,8 @@ postRouter.get("/:slug", getSinglePublishedPost);
 // Author only
 postRouter.post("/", authenticateToken, authorizeAuthor, createPost);
 
-postRouter.post("/:id/publish", authenticateToken, authorizeAuthor, publishPost);
-postRouter.put("/:id/update", authenticateToken, authorizeAuthor, updatePost);
-postRouter.delete("/:id/delete", authenticateToken, authorizeAuthor, deletePost);
+postRouter.patch("/:id", authenticateToken, authorizeAuthor, publishPost);
+postRouter.put("/:id", authenticateToken, authorizeAuthor, updatePost);
+postRouter.delete("/:id", authenticateToken, authorizeAuthor, deletePost);
 
 export default postRouter;
