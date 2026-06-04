@@ -7,10 +7,12 @@ import { Placeholder } from "@tiptap/extensions";
 
 type TextEditorProps = {
   onChange: (content: JSONContent) => void;
+  content: JSONContent;
 };
 
-export default function TextEditor({ onChange }: TextEditorProps) {
+export default function TextEditor({ onChange, content }: TextEditorProps) {
   const editor = useEditor({
+    content: content,
     extensions: [StarterKit,
         Placeholder.configure({
             placeholder: "Start writing...",

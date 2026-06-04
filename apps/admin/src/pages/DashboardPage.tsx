@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getMyPosts } from "@/services/posts";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { deletePost, getMyPosts, publishPost } from "@/services/posts";
 import { getCurrentUser } from "@/services/auth";
 import HeaderBar from "@/components/HeaderBar";
 import PostCard from "@/components/PostCard";
 
 export default function DashboardPage() {
+
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const {
     data: user,
     isLoading: isUserLoading,
@@ -21,7 +25,36 @@ export default function DashboardPage() {
     queryFn: getMyPosts,
   });
 
-  const navigate = useNavigate();
+  const publishPostMutation = useMutation({
+    mutationFn: publishPost,
+
+    onSuccess: async () => {
+      console.log("Post Published");
+      queryClient.invalidateQueries({
+        queryKey: ["posts"]
+      })
+    }
+  })
+
+  function handlePublish(id:string){
+    publishPostMutation.mutate(id);
+  }
+
+  const deletePostMutation = useMutation({
+    mutationFn: deletePost,
+
+    onSuccess: async () => {
+      console.log("Post Deleted");
+      queryClient.invalidateQueries({
+        queryKey: ["posts"]
+      })
+    }
+  })
+
+  function handleDelete(id:string){
+    deletePostMutation.mutate(id);
+  }
+
 
   if (userError) {
     return <div className="text-red-600">Failed to load posts</div>;
@@ -48,8 +81,8 @@ export default function DashboardPage() {
       <HeaderBar username={user.username} handleLogout={handleLogout} />
       <div className="mt-12">
         {posts?.map((post) => (
-          <div className="mt-4 mb-4">
-            <PostCard key={post.id} post={post} />
+          <div key={post.id} className="mt-4 mb-4">
+            <PostCard post={post} onPublish={handlePublish} onDelete={handleDelete}/>
           </div>
         ))}
       </div>

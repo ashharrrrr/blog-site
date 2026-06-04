@@ -1,38 +1,117 @@
 const API_URL = "http://localhost:3000";
-import type { Post, CreatePostInput } from "@/types/post";
+import type { Post, CreatePostInput, UpdatePostInput } from "@/types/post";
 
-export async function getMyPosts(): Promise<Post[]>{
-    const token = localStorage.getItem("token");
+export async function getMyPosts(): Promise<Post[]> {
+  const token = localStorage.getItem("token");
 
-    const response = await fetch(
-        `${API_URL}/posts/mine`,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-    if (!response.ok) {
-        throw new Error("Failed to fetch posts");
+  const response = await fetch(
+    `${API_URL}/posts/mine`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch posts");
+  }
 
-    return response.json();
+  return response.json();
 };
 
-export async function createPost(input: CreatePostInput){
-    const token = localStorage.getItem("token");
+export async function getSpecificPost(id: string): Promise<Post> {
+  const token = localStorage.getItem("token");
 
-    const response = await fetch(`${API_URL}/posts`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization:`Bearer ${token}`
-        },
-        body: JSON.stringify(input)
-    });
-
-    if(!response.ok){
-        throw new Error("Failed to create post")
+  const response = await fetch(
+    `${API_URL}/posts/mine/${id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }
-    return response.json();
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+
+  return response.json();
+}
+
+export async function createPost(input: CreatePostInput) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify(input)
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create post")
+  }
+  return response.json();
+}
+
+export async function updatePost(input: UpdatePostInput) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/posts/${input.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      title: input.title,
+      excerpt: input.excerpt,
+      content: input.content,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create post")
+  }
+  return response.json();
+
+}
+
+export async function publishPost(id: string) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/posts/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok){
+    throw new Error("Failed to publish post")
+  }
+
+  return response.json();
+}
+
+export async function deletePost(id: string) {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${API_URL}/posts/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok){
+    throw new Error("Failed to delete post")
+  }
+
+  return response.json();
 }
