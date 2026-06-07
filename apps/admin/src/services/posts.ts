@@ -70,6 +70,7 @@ export async function updatePost(input: UpdatePostInput) {
       title: input.title,
       excerpt: input.excerpt,
       content: input.content,
+      draftId: input.draftId,
     }),
   });
 

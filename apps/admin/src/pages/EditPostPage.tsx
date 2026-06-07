@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { QueryClient, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -60,6 +60,7 @@ export default function CreatePostPage() {
 
         <CardContent>
             <PostForm 
+                draftId={post.id}
                 initialTitle={post.title}
                 initialExcerpt={post.excerpt}
                 initialContent={post.content}

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import PostForm from "@/components/PostForm";
 
 export default function CreatePostPage() {
   const navigate = useNavigate();
+  const draftIdRef = useRef(crypto.randomUUID());
 
   const createPostMutation = useMutation({
     mutationFn: createPost,
@@ -27,6 +29,7 @@ export default function CreatePostPage() {
 
         <CardContent>
           <PostForm
+            draftId={draftIdRef.current}
             submitText="Create post"
             isPending={createPostMutation.isPending}
             onSubmit={(data) => {

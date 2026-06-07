@@ -13,6 +13,7 @@ const EMPTY_DOC : JSONContent = {
 }
 
 export default function PostForm({
+  draftId,
   initialTitle = "",
   initialExcerpt = "",
   initialContent = EMPTY_DOC,
@@ -32,6 +33,7 @@ export default function PostForm({
       title,
       excerpt,
       content,
+      draftId,
     });
   }
 
@@ -68,6 +70,7 @@ export default function PostForm({
         <TextEditor
           content={content}
           onChange={setContent}
+          draftId={draftId}
         />
       </div>
 

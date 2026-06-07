@@ -19,6 +19,7 @@ export type CreatePostInput = {
   title: string;
   excerpt: string;
   content: JSONContent | null;
+  draftId: string;
 };
 
 export type UpdatePostInput =
@@ -27,6 +28,7 @@ export type UpdatePostInput =
     }
 
 export type PostFormProps = {
+  draftId: string;
   initialTitle?: string;
   initialExcerpt?: string;
   initialContent?: JSONContent;
