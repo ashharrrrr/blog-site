@@ -1,13 +1,16 @@
 import { Link, useParams } from "react-router-dom";
-import { useQuery} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 import { Button } from "../components/ui/button";
 import { Pencil } from "lucide-react";
 import { Separator } from "../components/ui/separator";
 
 import { getSpecificPost } from "@/services/posts";
 import PostRenderer from "@/components/PostRenderer";
+import CommentsSection from "@/components/CommentsSection";
+import { deleteComment, getCommentsByPostId } from "@/services/comments";
 
 export default function PostPreviewPage() {
+  const queryClient = useQueryClient();
   const { id } = useParams();
 
   const {
@@ -20,8 +23,27 @@ export default function PostPreviewPage() {
     enabled: !!id,
   });
 
-  console.log(post);
+  const{
+    data: comments,
+    isLoading: commentsLoading,
+  } = useQuery({
+    queryKey: ["comments", id],
+    queryFn: () => getCommentsByPostId(id!),
+    enabled: !!id
+  })
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: deleteComment,
+
+    onSuccess: async () => {
+      console.log("Comment Deleted");
+      queryClient.invalidateQueries({
+        queryKey: ["comments", id]
+      })
+    }
+  })
+
+  console.log(post);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -58,6 +80,12 @@ export default function PostPreviewPage() {
       <div className="rounded border p-4">
         <PostRenderer content={post.content} />
       </div>
+
+      <CommentsSection
+        comments={comments ?? []}
+        isLoading={commentsLoading}
+        onDelete={(commentId) => deleteCommentMutation.mutate(commentId)}
+        />
     </article>
   );
 }
