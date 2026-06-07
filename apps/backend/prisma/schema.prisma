@@ -17,6 +17,12 @@ enum Role {
   AUTHOR
 }
 
+enum ImageStatus {
+    PENDING
+    READY
+    FAILED
+  }
+
 model User {
   id           String    @id @default(cuid())
   username     String    @unique
@@ -25,6 +31,7 @@ model User {
   displayName  String?
   bio          String?
   posts        Post[]
+  images       PostImage[]
   comments     Comment[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
@@ -36,6 +43,10 @@ model Post {
   slug        String    @unique
   content     Json
   excerpt     String?
+
+  images  PostImage[]
+
+
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -47,6 +58,27 @@ model Post {
 
   @@index([authorId])
 }
+
+model PostImage {
+  id          String       @id @default(cuid())
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId      String?
+  post        Post?        @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  draftId     String?
+
+  filename    String
+  storagePath String       @unique
+  url         String
+  mimeType    String
+  size        Int
+  status      ImageStatus  @default(PENDING)
+
+  createdAt   DateTime     @default(now())
+}
+
 
 model Comment {
   id        String   @id @default(cuid())

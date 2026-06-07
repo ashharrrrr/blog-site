@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { slugify } from "../utils/slugify.js";
 import { prisma } from "../lib/prisma.js";
+import { CreatePostSchema, UpdatePostSchema } from "../schema/postSchemas.js";
+import supabase from "../lib/supbase.js";
 
 export async function createPost(req: Request, res: Response) {
   try {
@@ -9,28 +11,165 @@ export async function createPost(req: Request, res: Response) {
         message: "Unauthorized"
       })
     }
-    const { title, excerpt, content } = req.body;
 
-    if (!title || !content) {
+    const result = CreatePostSchema.safeParse(req.body);
+
+    if (!result.success) {
       return res.status(400).json({
-        message: "Title and body required"
+        errors: result.error.issues,
       })
     }
+
+    const { title, excerpt, content, draftId } = result.data;
 
     const post = await prisma.post.create({
       data: {
         authorId: req.user.userId,
         title,
-        content,
-        excerpt,
+        content: content as object,
+        excerpt: excerpt ?? null,
         slug: slugify(title)
       }
     });
+
+    if (draftId) {
+      await prisma.postImage.updateMany({
+        where: {
+          authorId: req.user.userId,
+          draftId,
+          postId: null,
+        },
+        data: {
+          postId: post.id,
+          draftId: null
+        }
+      })
+    }
 
     return res.status(201).json({
       message: "Post created",
       id: post.id,
       slug: post.slug
+    })
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Internal server error"
+    })
+  }
+}
+
+export async function updatePost(req: Request<PostParams>, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      })
+    }
+
+    const result = UpdatePostSchema.safeParse(req.body);
+
+    if (!result.success) {
+      return res.status(400).json({
+        errors: result.error.issues,
+      })
+    }
+
+    const post = await getOwnedPost(req.params.id, req.user.userId);
+
+    if (!post) {
+      return res.status(403).json({
+        message: "Forbidden"
+      });
+    }
+
+    const { title, excerpt, content, draftId } = result.data
+
+    const normalizedExcerpt = excerpt ?? null;
+
+    const updated = await prisma.post.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        title,
+        content: content as object,
+        slug: slugify(req.body.title),
+        excerpt: normalizedExcerpt,
+      }
+    });
+
+    if (draftId) {
+      await prisma.postImage.updateMany({
+        where: {
+          authorId: req.user.userId,
+          draftId,
+          postId: null,
+        },
+        data: {
+          postId: post.id,
+          draftId: null
+        }
+      })
+    }
+
+    return res.status(201).json({
+      message: "Post updated",
+      id: updated.id,
+      slug: updated.slug,
+    });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      message: "Internal Server Error"
+    })
+  }
+}
+
+export async function deletePost(req: Request<PostParams>, res: Response) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: "Unauthorized"
+      })
+    }
+
+    const post = await getOwnedPost(req.params.id, req.user.userId);
+
+    if (!post) {
+      return res.status(403).json({
+        message: "Forbidden"
+      })
+    }
+
+    const images = await prisma.postImage.findMany({
+      where: {
+        postId: req.params.id,
+        authorId: req.user.userId,
+      },
+    });
+
+    await supabase.storage
+      .from(process.env.SUPABASE_BUCKET!)
+      .remove(images.map((image) => image.storagePath));
+
+    await prisma.postImage.deleteMany({
+      where: {
+        postId: req.params.id,
+        authorId: req.user.userId,
+      },
+    });
+
+    await prisma.post.delete({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    return res.status(200).json({
+      messsage: "Post deleted"
     })
 
   } catch (err) {
@@ -151,89 +290,6 @@ export async function publishPost(req: Request<PostParams>, res: Response) {
   }
 }
 
-export async function updatePost(req: Request<PostParams>, res: Response) {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      })
-    }
-
-    if (!req.body.title || !req.body.content) {
-      return res.status(400).json({
-        message: "Title or body cannot be empty"
-      })
-    }
-
-    const post = await getOwnedPost(req.params.id, req.user.userId);
-
-    if (!post) {
-      return res.status(403).json({
-        message: "Forbidden"
-      });
-    }
-
-    console.log("BEFORE UPDATE", post)
-
-    const updated = await prisma.post.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        title: req.body.title,
-        content: req.body.content,
-        slug: slugify(req.body.title),
-      }
-    });
-    console.log("After Update", updated)
-
-    return res.status(201).json({
-      message: "Post updated",
-      id: updated.id,
-      slug: updated.slug,
-    });
-
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal Server Error"
-    })
-  }
-}
-
-export async function deletePost(req: Request<PostParams>, res: Response) {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        message: "Unauthorized"
-      })
-    }
-
-    const post = await getOwnedPost(req.params.id, req.user.userId);
-
-    if (!post) {
-      return res.status(403).json({
-        message: "Forbidden"
-      })
-    }
-
-    await prisma.post.delete({
-      where: {
-        id: req.params.id
-      }
-    });
-
-    return res.status(200).json({
-      messsage: "Post deleted"
-    })
-
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      message: "Internal server error"
-    })
-  }
-}
 
 export async function getAllAuthorPosts(req: Request, res: Response) {
   try {
