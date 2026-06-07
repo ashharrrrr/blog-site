@@ -22,6 +22,10 @@ export async function login(username: string, password: string) {
 export async function getCurrentUser() {
   const token = localStorage.getItem("token");
 
+  if(!token){
+    return;
+  }
+
   const response = await fetch(
     `${API_URL}/auth/me`,
     {

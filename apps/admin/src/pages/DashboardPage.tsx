@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function DashboardPage() {
 
   const queryClient = useQueryClient();
+  const [filter, setFilter] = useState<"all" | "published" | "drafts">("all");
 
   const {
     data: posts,
@@ -49,19 +50,20 @@ export default function DashboardPage() {
   }
 
   if (isPostsLoading) {
-    <ul className="space-y-6">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <li key={index}>
-          <PostCardSkeleton />
-        </li>
-      ))}
-    </ul>
+    return (
+      <ul className="space-y-6">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <li key={index}>
+            <PostCardSkeleton />
+          </li>
+        ))}
+      </ul>
+    )
   }
   if (postsError) {
     return <div className="text-red-600">Failed to load posts</div>;
   }
 
-  const [filter, setFilter] = useState<"all" | "published" | "drafts">("all");
 
   const filteredPosts = posts?.filter((post) => {
     if (filter === "published") {
@@ -78,7 +80,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PostFilters filter={filter} onFilterChange={setFilter}/>
+      <PostFilters filter={filter} onFilterChange={setFilter} />
       {!posts?.length ?
         (<div>No posts found.</div>) :
         (<div className="mt-12">

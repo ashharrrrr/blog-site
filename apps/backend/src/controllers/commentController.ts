@@ -9,13 +9,17 @@ type PostCommentParams = {
 
 export async function createComment(req: Request<PostCommentParams>, res: Response) {
   try {
+    console.log("request reached")
     if (!req.user) {
       return res.status(401).json({
         message: "Unauthorized"
       });
     }
+    console.log("user exist", req.user);
+    console.log("COMMENT", req.body);
 
     const { comment } = CreateCommentSchema.parse(req.body);
+
 
     console.log("postid", req.params.id);
 
