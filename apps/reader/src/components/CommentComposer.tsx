@@ -60,6 +60,7 @@ export default function CommentComposer({
     e: React.SyntheticEvent
   ) {
     console.log("COMMENTTTT", comment);
+    console.log(isLoggedIn);
     e.preventDefault();
 
     if (!isLoggedIn) {

@@ -7,13 +7,19 @@ export default function LoginDialog() {
     loginDialogOpen,
     closeLoginDialog,
     login,
+    register,
   } = useAuth();
+
+  const [mode, setMode] = useState<"login" | "register">("login");
 
   const [username, setUsername] =
     useState("");
 
   const [password, setPassword] =
     useState("");
+
+  const [displayName, setDispalyName] = useState("");
+  const [bio, setBio] = useState("");
 
   const [error, setError] =
     useState("");
@@ -30,10 +36,21 @@ export default function LoginDialog() {
     try {
       setError("");
 
-      await login(
+      if (mode === "login") {
+        await login(
+          username,
+          password
+        );
+        return;
+      }
+
+      await register(
         username,
-        password
+        password,
+        displayName,
+        bio,
       );
+
     } catch {
       setError(
         "Invalid username or password"
@@ -45,7 +62,7 @@ export default function LoginDialog() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="w-full max-w-md rounded-lg bg-white p-6">
         <h2 className="mb-4 text-xl font-bold">
-          Login
+          {mode === "login" ? "Login to Comment" : "Create Account"}
         </h2>
 
         <form
@@ -75,6 +92,33 @@ export default function LoginDialog() {
             }
           />
 
+          {
+            mode === "register" && (
+              <input
+                className="w-full rounded border p-2"
+                placeholder="Display Name"
+                value={displayName}
+                onChange={(e) =>
+                  setDispalyName(
+                    e.target.value
+                  )
+                }
+              />
+            )}
+          {mode === "register" && (
+            <input
+              className="w-full rounded border p-2"
+              placeholder="Bio"
+              value={bio}
+              onChange={(e) =>
+                setBio(
+                  e.target.value
+                )
+              }
+            />
+          )
+          }
+
           {error && (
             <p className="text-sm text-red-500">
               {error}
@@ -95,10 +139,41 @@ export default function LoginDialog() {
               type="submit"
               className="rounded bg-black px-4 py-2 text-white"
             >
-              Login
+              {mode === "login"
+                ? "Login"
+                : "Register"}
             </button>
           </div>
         </form>
+        <div className="mt-6 text-center text-sm">
+          {mode === "login" ? (
+            <>
+              Don't have an account?{" "}
+              <button
+                className="font-medium text-orange-600"
+                onClick={() =>
+                  setMode(
+                    "register"
+                  )
+                }
+              >
+                Register
+              </button>
+            </>
+          ) : (
+            <>
+              Already have an account?{" "}
+              <button
+                className="font-medium text-orange-600"
+                onClick={() =>
+                  setMode("login")
+                }
+              >
+                Login
+              </button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

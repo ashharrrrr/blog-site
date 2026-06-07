@@ -5,6 +5,8 @@ import {
   useState,
 } from "react";
 
+import { login as loginRequest, register as registerRequest } from "@/services/auth";
+
 import type { ReactNode } from "react";
 
 const API_URL = "http://localhost:3000";
@@ -27,6 +29,13 @@ type AuthContextType = {
   login: (
     username: string,
     password: string
+  ) => Promise<void>;
+
+  register: (
+    username: string,
+    password: string,
+    displayName: string,
+    bio: string,
   ) => Promise<void>;
 
   logout: () => void;
@@ -79,26 +88,31 @@ export function AuthProvider({
     username: string,
     password: string
   ) {
-    const response = await fetch(
-      `${API_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      }
+
+    const data = await loginRequest(username, password);
+
+    localStorage.setItem(
+      "token",
+      data.token
     );
 
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
+    await fetchMe(data.token);
 
-    const data = await response.json();
+    setLoginDialogOpen(false);
+  }
+
+  async function register(
+    username: string,
+    password: string,
+    displayName: string,
+    bio: string,
+  ) {
+    const data = await registerRequest(
+      username,
+      password,
+      displayName,
+      bio,
+    );
 
     localStorage.setItem(
       "token",
@@ -112,31 +126,31 @@ export function AuthProvider({
 
   function logout() {
     localStorage.removeItem("token");
-
     setUser(null);
-  }
+}
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoggedIn: !!user,
+return (
+  <AuthContext.Provider
+    value={{
+      user,
+      isLoggedIn: !!user,
 
-        loginDialogOpen,
+      loginDialogOpen,
 
-        openLoginDialog: () =>
-          setLoginDialogOpen(true),
+      openLoginDialog: () =>
+        setLoginDialogOpen(true),
 
-        closeLoginDialog: () =>
-          setLoginDialogOpen(false),
+      closeLoginDialog: () =>
+        setLoginDialogOpen(false),
 
-        login,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+      login,
+      register,
+      logout,
+    }}
+  >
+    {children}
+  </AuthContext.Provider>
+);
 }
 
 export function useAuth() {

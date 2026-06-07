@@ -36,9 +36,21 @@ export async function registerUser(req: Request, res: Response) {
       },
     });
 
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      },
+    );
+
     return res.status(201).json({
       id: user.id,
       username: user.username,
+      token
     });
   } catch (err) {
     console.error(err);
