@@ -50,7 +50,7 @@ export async function registerUser(req: Request, res: Response) {
     return res.status(201).json({
       id: user.id,
       username: user.username,
-      token
+      token,
     });
   } catch (err) {
     console.error(err);
@@ -69,41 +69,56 @@ export async function registerUser(req: Request, res: Response) {
 }
 
 export async function loginUser(req: Request, res: Response) {
-  const { username, password } = req.body;
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
+  try {
+    const { username, password } = req.body;
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
 
-  if (!user) {
-    return res.status(401).json({
-      message: "Invalid username or password",
+    if (!user) {
+      return res.status(401).json({
+        message: "Invalid username or password",
+      });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.passwordHash);
+
+    if (!validPassword) {
+      return res.status(401).json({
+        message: "Invalid username or password",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        role: user.role,
+      },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      },
+    );
+
+    return res.status(200).json({
+      token,
+    });
+  } catch (err) {
+    console.error(err);
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return res.status(400).json({
+        message: "Username already exists",
+      });
+    }
+    return res.status(500).json({
+      message: "Internal Server Error",
     });
   }
-
-  const validPassword = await bcrypt.compare(password, user.passwordHash);
-
-  if (!validPassword) {
-    return res.status(401).json({
-      message: "Invalid username or password",
-    });
-  }
-
-  const token = jwt.sign(
-    {
-      userId: user.id,
-      role: user.role,
-    },
-    process.env.JWT_SECRET!,
-    {
-      expiresIn: "7d",
-    },
-  );
-
-  return res.status(200).json({
-    token,
-  });
 }
 
 export async function returnUser(req: Request, res: Response) {
@@ -137,7 +152,7 @@ export async function returnUser(req: Request, res: Response) {
   } catch (err) {
     console.error(err);
     return res.status(500).json({
-      message: "Internal Server Error"
-    })
+      message: "Internal Server Error",
+    });
   }
 }
