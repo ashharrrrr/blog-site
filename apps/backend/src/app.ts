@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["https://blog-site-admin.vercel.app/", "https://blog-site-reader.vercel.app/"],
+    origin: ["https://blog-site-admin.vercel.app", "https://blog-site-reader.vercel.app"],
   }),
 );
 
