@@ -70,12 +70,16 @@ export async function registerUser(req: Request, res: Response) {
 
 export async function loginUser(req: Request, res: Response) {
   try {
+
+    console.log("BODY", req.body)
     const { username, password } = req.body;
     const user = await prisma.user.findUnique({
       where: {
         username,
       },
     });
+
+    console.log("FOUND USER",  user?.username);
 
     if (!user) {
       return res.status(401).json({
@@ -84,6 +88,8 @@ export async function loginUser(req: Request, res: Response) {
     }
 
     const validPassword = await bcrypt.compare(password, user.passwordHash);
+
+    console.log("VALID PASSWORD", validPassword)
 
     if (!validPassword) {
       return res.status(401).json({
