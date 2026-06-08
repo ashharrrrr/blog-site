@@ -3,7 +3,7 @@ import type {
   PresignImageResponse,
 } from "@/types/imageUpload";
 
-const API_URL = "blog-site-production-b6e9.up.railway.app";
+const API_URL = "https://blog-site-production-b6e9.up.railway.app";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_BUCKET = import.meta.env.VITE_SUPABASE_BUCKET;

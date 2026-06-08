@@ -1,5 +1,5 @@
 import type { Comment } from "@/types/comment";
-const API_URL = "blog-site-production-b6e9.up.railway.app";
+const API_URL = "https://blog-site-production-b6e9.up.railway.app";
 
 export async function getCommentsByPostId(id: string): Promise<Comment[]> {
   const token = localStorage.getItem("token");

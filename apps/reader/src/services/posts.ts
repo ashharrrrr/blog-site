@@ -1,6 +1,6 @@
 import type { Post } from "@/types/post";
 
-const API_URL = "blog-site-production-b6e9.up.railway.app";
+const API_URL = "https://blog-site-production-b6e9.up.railway.app";
 
 export async function getPublishedPosts(): Promise<Post[]> {
   const response = await fetch(`${API_URL}/posts`);
