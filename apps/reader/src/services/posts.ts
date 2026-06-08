@@ -1,11 +1,9 @@
 import type { Post } from "@/types/post";
 
-const API_URL="http://localhost:3000";
+const API_URL = "blog-site-production-b6e9.up.railway.app";
 
 export async function getPublishedPosts(): Promise<Post[]> {
-  const response = await fetch(
-    `${API_URL}/posts`
-  );
+  const response = await fetch(`${API_URL}/posts`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
@@ -14,12 +12,8 @@ export async function getPublishedPosts(): Promise<Post[]> {
   return response.json();
 }
 
-export async function getPostBySlug(
-  slug: string
-): Promise<Post> {
-  const response = await fetch(
-    `${API_URL}/posts/${slug}`
-  );
+export async function getPostBySlug(slug: string): Promise<Post> {
+  const response = await fetch(`${API_URL}/posts/${slug}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch post");

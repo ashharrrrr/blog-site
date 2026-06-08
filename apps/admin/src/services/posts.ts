@@ -1,37 +1,31 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "blog-site-production-b6e9.up.railway.app";
 import type { Post, CreatePostInput, UpdatePostInput } from "@/types/post";
 
 export async function getMyPosts(): Promise<Post[]> {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_URL}/posts/mine`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
+  const response = await fetch(`${API_URL}/posts/mine`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
   }
 
   return response.json();
-};
+}
 
 export async function getSpecificPost(id: string): Promise<Post> {
   const token = localStorage.getItem("token");
 
-  const response = await fetch(
-    `${API_URL}/posts/mine/${id}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
+  const response = await fetch(`${API_URL}/posts/mine/${id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
   if (!response.ok) {
     throw new Error("Failed to fetch posts");
   }
@@ -46,13 +40,13 @@ export async function createPost(input: CreatePostInput) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(input)
+    body: JSON.stringify(input),
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create post")
+    throw new Error("Failed to create post");
   }
   return response.json();
 }
@@ -64,7 +58,7 @@ export async function updatePost(input: UpdatePostInput) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       title: input.title,
@@ -75,10 +69,9 @@ export async function updatePost(input: UpdatePostInput) {
   });
 
   if (!response.ok) {
-    throw new Error("Failed to create post")
+    throw new Error("Failed to create post");
   }
   return response.json();
-
 }
 
 export async function publishPost(id: string) {
@@ -88,12 +81,12 @@ export async function publishPost(id: string) {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  if (!response.ok){
-    throw new Error("Failed to publish post")
+  if (!response.ok) {
+    throw new Error("Failed to publish post");
   }
 
   return response.json();
@@ -106,12 +99,12 @@ export async function deletePost(id: string) {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  if (!response.ok){
-    throw new Error("Failed to delete post")
+  if (!response.ok) {
+    throw new Error("Failed to delete post");
   }
 
   return response.json();

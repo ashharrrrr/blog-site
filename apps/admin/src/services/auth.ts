@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000";
+const API_URL = "blog-site-production-b6e9.up.railway.app";
 
 export async function login(username: string, password: string) {
   const response = await fetch(`${API_URL}/auth/login`, {
@@ -22,20 +22,17 @@ export async function login(username: string, password: string) {
 export async function getCurrentUser() {
   const token = localStorage.getItem("token");
 
-  if(!token){
+  if (!token) {
     return;
   }
 
-  const response = await fetch(
-    `${API_URL}/auth/me`,
-    {
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
-    }
-  );
+  const response = await fetch(`${API_URL}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if(!response.ok) {
+  if (!response.ok) {
     throw new Error("Unauthorized");
   }
   return response.json();

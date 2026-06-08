@@ -12,7 +12,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:8000"],
+    origin: ["https://blog-site-admin.vercel.app/", "https://blog-site-reader.vercel.app/"],
   }),
 );
 
