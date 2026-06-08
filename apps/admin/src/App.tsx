@@ -6,12 +6,14 @@ import PostPreviewPage from "./pages/PostPreviewPage.tsx"
 import EditPostPage from "./pages/EditPostPage.tsx"
 import DashboardLayout from "./layouts/DashboardLayout.tsx";
 import ProtectedRoute from "./pages/ProtectedRoute.tsx";
+import RegisterPage from "./pages/RegisterPage.tsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />}/>
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path="/" element={<DashboardPage />} />

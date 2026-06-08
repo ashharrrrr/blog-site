@@ -54,7 +54,7 @@ export default function LoginPage() {
             Enter your email below to login to your account
           </CardDescription>
           <CardAction>
-            <Button variant="link">Sign Up</Button>
+            <Button variant="link" onClick={() => navigate("/register")}>Sign Up</Button>
           </CardAction>
         </CardHeader>
         <CardContent>
