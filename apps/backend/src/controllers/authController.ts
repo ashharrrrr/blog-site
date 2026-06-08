@@ -79,8 +79,8 @@ export async function loginUser(req: Request, res: Response) {
       },
     });
 
-    console.log("FOUND USER",  user?.username);
-
+    console.log("FOUND USER", user?.username);
+    console.log("HASH", user?.passwordHash);
     if (!user) {
       return res.status(401).json({
         message: "Invalid username or password",
